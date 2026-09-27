@@ -1,2 +1,0 @@
-# vercel-manager
-vercel manager

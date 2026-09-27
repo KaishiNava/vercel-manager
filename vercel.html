@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08090d">
+  <title>Vercel Project Cleaner</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #07080c;
+      --panel: rgba(16, 18, 25, .78);
+      --panel-2: #11141c;
+      --border: rgba(255,255,255,.08);
+      --border-hover: rgba(255,255,255,.15);
+      --text: #f5f7fa;
+      --muted: #8d95a5;
+      --green: #46e6a1;
+      --green-2: #20c997;
+      --red: #ff5263;
+      --yellow: #ffc857;
+      --blue: #5d8cff;
+      --shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+
+    html {
+      background: var(--bg);
+      color-scheme: dark;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(70,230,161,.10), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(93,140,255,.09), transparent 25%),
+        var(--bg);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1250px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 50px;
+    }
+
+    /* HEADER */
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 26px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .brand-logo {
+      width: 45px;
+      height: 45px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #1d222d, #0c0e13);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 35px rgba(0,0,0,.3);
+      font-size: 19px;
+      font-weight: 900;
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      line-height: 1.1;
+      letter-spacing: -.4px;
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .connection {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.025);
+      border-radius: 999px;
+      padding: 8px 13px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 12px rgba(255,82,99,.55);
+    }
+
+    .dot.connected {
+      background: var(--green);
+      box-shadow: 0 0 12px rgba(70,230,161,.55);
+    }
+
+    /* TOKEN */
+
+    .token-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      margin-bottom: 18px;
+    }
+
+    .token-title {
+      font-weight: 750;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    .token-desc {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+      margin-bottom: 14px;
+    }
+
+    .token-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-wrap {
+      position: relative;
+      flex: 1;
+    }
+
+    .input {
+      width: 100%;
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      outline: none;
+      padding: 0 14px;
+      transition: .2s;
+    }
+
+    .input:focus {
+      border-color: rgba(70,230,161,.45);
+      box-shadow: 0 0 0 3px rgba(70,230,161,.08);
+    }
+
+    .btn {
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #171a22;
+      color: var(--text);
+      padding: 0 17px;
+      font-weight: 700;
+      font-size: 13px;
+      transition: .18s;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: var(--border-hover);
+      background: #1c202a;
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn.primary {
+      background: var(--green);
+      color: #06130d;
+      border-color: var(--green);
+    }
+
+    .btn.primary:hover {
+      background: #5af0ad;
+    }
+
+    .btn.danger {
+      background: rgba(255,82,99,.10);
+      color: #ff7180;
+      border-color: rgba(255,82,99,.22);
+    }
+
+    .btn.danger:hover {
+      background: rgba(255,82,99,.16);
+      border-color: rgba(255,82,99,.4);
+    }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* STATS */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .stat {
+      padding: 17px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -.7px;
+    }
+
+    .stat-value.green {
+      color: var(--green);
+    }
+
+    .stat-value.red {
+      color: var(--red);
+    }
+
+    /* TOOLBAR */
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 13px;
+    }
+
+    .toolbar-left,
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .search {
+      width: 270px;
+      height: 42px;
+      padding: 0 13px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: rgba(255,255,255,.025);
+      color: var(--text);
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: rgba(255,255,255,.18);
+    }
+
+    .select-count {
+      color: var(--muted);
+      font-size: 12px;
+      padding-left: 3px;
+    }
+
+    /* PROJECTS */
+
+    .projects {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .project {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-height: 72px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      background: rgba(15,17,23,.76);
+      border-radius: 15px;
+      transition: .18s;
+    }
+
+    .project:hover {
+      border-color: var(--border-hover);
+      background: rgba(22,25,33,.85);
+    }
+
+    .project.selected {
+      border-color: rgba(70,230,161,.28);
+      background: rgba(70,230,161,.045);
+    }
+
+    .checkbox {
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      border-radius: 5px;
+      border: 1px solid #454b58;
+      background: #0d0f14;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: .15s;
+    }
+
+    .checkbox:checked {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .checkbox:checked::after {
+      content: "✓";
+      color: #07150e;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .project-icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border-radius: 11px;
+      background: #181b23;
+      border: 1px solid var(--border);
+      display: grid;
+      place-items: center;
+      font-weight: 850;
+      font-size: 13px;
+    }
+
+    .project-info {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .project-name {
+      font-size: 14px;
+      font-weight: 750;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .project-meta {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .project-id {
+      opacity: .7;
+    }
+
+    .project-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .mini-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      display: grid;
+      place-items: center;
+      transition: .18s;
+    }
+
+    .mini-btn:hover {
+      color: var(--text);
+      background: rgba(255,255,255,.05);
+    }
+
+    .mini-btn.delete:hover {
+      color: #ff7180;
+      border-color: rgba(255,82,99,.25);
+      background: rgba(255,82,99,.07);
+    }
+
+    /* EMPTY */
+
+    .empty {
+      min-height: 280px;
+      border: 1px dashed rgba(255,255,255,.10);
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 30px;
+      color: var(--muted);
+    }
+
+    .empty-icon {
+      font-size: 35px;
+      margin-bottom: 10px;
+      opacity: .7;
+    }
+
+    .empty h3 {
+      color: var(--text);
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    .empty p {
+      font-size: 12px;
+      max-width: 420px;
+      line-height: 1.6;
+    }
+
+    /* PROGRESS */
+
+    .progress-card {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(130px);
+      width: min(470px, calc(100% - 28px));
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: rgba(14,16,22,.94);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 70px rgba(0,0,0,.55);
+      z-index: 50;
+      transition: .28s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .progress-card.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 9px;
+    }
+
+    .progress-status {
+      color: var(--muted);
+    }
+
+    .progress-bar {
+      height: 7px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #252933;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--green);
+      border-radius: inherit;
+      transition: width .2s;
+    }
+
+    /* TOAST */
+
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      width: min(360px, calc(100% - 40px));
+    }
+
+    .toast {
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: rgba(16,18,25,.96);
+      box-shadow: 0 15px 45px rgba(0,0,0,.35);
+      animation: toastIn .25s ease;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .toast.success {
+      border-color: rgba(70,230,161,.25);
+    }
+
+    .toast.error {
+      border-color: rgba(255,82,99,.28);
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* MODAL */
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      place-items: center;
+      padding: 20px;
+      background: rgba(0,0,0,.68);
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-bg.show {
+      display: grid;
+    }
+
+    .modal {
+      width: min(440px, 100%);
+      border: 1px solid var(--border);
+      border-radius: 19px;
+      background: #11141b;
+      box-shadow: 0 30px 100px rgba(0,0,0,.65);
+      padding: 22px;
+      animation: modalIn .18s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.97) translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 13px;
+      display: grid;
+      place-items: center;
+      background: rgba(255,82,99,.10);
+      border: 1px solid rgba(255,82,99,.2);
+      color: var(--red);
+      font-size: 20px;
+      margin-bottom: 14px;
+    }
+
+    .modal h2 {
+      font-size: 18px;
+      margin-bottom: 7px;
+    }
+
+    .modal p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* LOADER */
+
+    .loader {
+      width: 17px;
+      height: 17px;
+      border: 2px solid rgba(0,0,0,.18);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 800px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .toolbar-left,
+      .toolbar-right {
+        width: 100%;
+      }
+
+      .search {
+        width: 100%;
+      }
+
+      .toolbar-right {
+        justify-content: space-between;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .app {
+        width: min(100% - 18px, 1250px);
+        padding-top: 17px;
+      }
+
+      .header {
+        align-items: flex-start;
+      }
+
+      .connection {
+        font-size: 0;
+        padding: 10px;
+      }
+
+      .token-row {
+        flex-direction: column;
+      }
+
+      .token-row .btn {
+        width: 100%;
+      }
+
+      .stats {
+        gap: 8px;
+      }
+
+      .stat {
+        padding: 13px;
+      }
+
+      .stat-value {
+        font-size: 21px;
+      }
+
+      .project {
+        padding: 10px;
+      }
+
+      .project-actions .mini-btn:first-child {
+        display: none;
+      }
+
+      .project-meta {
+        max-width: 230px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="app">
+
+    <header class="header">
+      <div class="brand">
+        <div class="brand-logo">V</div>
+        <div>
+          <h1>Vercel Project Cleaner</h1>
+          <p>Manage & delete projects in bulk</p>
+        </div>
+      </div>
+
+      <div class="connection">
+        <span class="dot" id="connectionDot"></span>
+        <span id="connectionText">Not connected</span>
+      </div>
+    </header>
+
+    <section class="token-card">
+      <div class="token-title">Vercel Access Token</div>
+      <div class="token-desc">
+        Masukkan Personal Access Token Vercel kamu. Token hanya digunakan selama halaman
+        ini aktif dan tidak disimpan ke localStorage.
+      </div>
+
+      <div class="token-row">
+        <div class="input-wrap">
+          <input
+            id="tokenInput"
+            class="input"
+            type="password"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Paste Vercel token di sini..."
+          >
+        </div>
+
+        <button class="btn primary" id="connectBtn" onclick="connectVercel()">
+          Connect
+        </button>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-label">TOTAL PROJECT</div>
+        <div class="stat-value" id="totalCount">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">SELECTED</div>
+        <div class="stat-value green" id="selectedCount">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">DELETED</div>
+        <div class="stat-value green" id="deletedCount">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">FAILED</div>
+        <div class="stat-value red" id="failedCount">0</div>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <div class="toolbar-left">
+        <input
+          id="searchInput"
+          class="search"
+          type="search"
+          placeholder="Search project..."
+          oninput="renderProjects()"
+        >
+      </div>
+
+      <div class="toolbar-right">
+        <span class="select-count" id="selectionText">
+          0 selected
+        </span>
+
+        <button class="btn" onclick="selectAllVisible()">
+          Select All
+        </button>
+
+        <button class="btn" onclick="clearSelection()">
+          Clear
+        </button>
+
+        <button class="btn" id="refreshBtn" onclick="loadProjects()">
+          ↻ Refresh
+        </button>
+
+        <button class="btn danger" id="deleteSelectedBtn" onclick="deleteSelected()">
+          Delete Selected
+        </button>
+      </div>
+    </section>
+
+    <section id="projectsContainer" class="projects">
+      <div class="empty">
+        <div>
+          <div class="empty-icon">◈</div>
+          <h3>Belum terhubung</h3>
+          <p>
+            Masukkan Vercel Access Token lalu tekan Connect untuk mengambil daftar
+            project kamu.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- PROGRESS -->
+
+  <div class="progress-card" id="progressCard">
+    <div class="progress-top">
+      <strong id="progressTitle">Deleting projects...</strong>
+      <span class="progress-status" id="progressStatus">0 / 0</span>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- MODAL -->
+
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <div class="modal-icon">!</div>
+
+      <h2 id="modalTitle">Delete projects?</h2>
+
+      <p id="modalText">
+        Tindakan ini permanen dan project yang dihapus tidak dapat dipulihkan.
+      </p>
+
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">
+          Cancel
+        </button>
+
+        <button class="btn danger" id="modalConfirmBtn">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /*
+   * ============================================================
+   * VERCEL PROJECT CLEANER
+   * Single-file frontend
+   * ============================================================
+   */
+
+  const API_BASE = "https://api.vercel.com";
+
+  let vercelToken = "";
+  let projects = [];
+  let selectedProjects = new Set();
+
+  let deletedCount = 0;
+  let failedCount = 0;
+
+  let currentConfirmAction = null;
+
+  /*
+   * ------------------------------------------------------------
+   * DOM
+   * ------------------------------------------------------------
+   */
+
+  const $ = id => document.getElementById(id);
+
+  /*
+   * ------------------------------------------------------------
+   * VERCEL API
+   * ------------------------------------------------------------
+   */
+
+  async function vercelFetch(url, options = {}) {
+    if (!vercelToken) {
+      throw new Error("Vercel token belum dimasukkan.");
+    }
+
+    const response = await fetch(API_BASE + url, {
+      ...options,
+      headers: {
+        "Authorization": "Bearer " + vercelToken,
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+      }
+    });
+
+    let data = null;
+
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
+
+    if (!response.ok) {
+      let message =
+        data?.error?.message ||
+        data?.message ||
+        `HTTP ${response.status}`;
+
+      throw new Error(message);
+    }
+
+    return data;
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * CONNECT
+   * ------------------------------------------------------------
+   */
+
+  async function connectVercel() {
+    const input = $("tokenInput");
+    const btn = $("connectBtn");
+
+    const token = input.value.trim();
+
+    if (!token) {
+      showToast("Masukkan Vercel Access Token terlebih dahulu.", "error");
+      input.focus();
+      return;
+    }
+
+    vercelToken = token;
+
+    btn.disabled = true;
+    btn.innerHTML = `<span class="loader"></span> Connecting`;
+
+    try {
+      /*
+       * Endpoint user dipakai untuk memastikan token valid.
+       */
+      const user = await vercelFetch("/v2/user");
+
+      setConnection(true);
+
+      showToast(
+        `Connected${user?.user?.username ? " sebagai " + user.user.username : ""}.`,
+        "success"
+      );
+
+      await loadProjects();
+
+    } catch (error) {
+
+      vercelToken = "";
+
+      setConnection(false);
+
+      showToast(
+        "Gagal terhubung: " + error.message,
+        "error"
+      );
+
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Connect";
+    }
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * CONNECTION UI
+   * ------------------------------------------------------------
+   */
+
+  function setConnection(connected) {
+    const dot = $("connectionDot");
+    const text = $("connectionText");
+
+    if (connected) {
+      dot.classList.add("connected");
+      text.textContent = "Connected";
+    } else {
+      dot.classList.remove("connected");
+      text.textContent = "Not connected";
+    }
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * LOAD PROJECTS
+   * ------------------------------------------------------------
+   */
+
+  async function loadProjects() {
+    if (!vercelToken) {
+      showToast("Hubungkan Vercel terlebih dahulu.", "error");
+      return;
+    }
+
+    const container = $("projectsContainer");
+    const refreshBtn = $("refreshBtn");
+
+    refreshBtn.disabled = true;
+    refreshBtn.innerHTML = `<span class="loader"></span>`;
+
+    container.innerHTML = `
+      <div class="empty">
+        <div>
+          <div class="empty-icon">◌</div>
+          <h3>Loading projects...</h3>
+          <p>Mengambil daftar project dari Vercel.</p>
+        </div>
+      </div>
+    `;
+
+    try {
+      const allProjects = [];
+
+      let next = null;
+
+      /*
+       * Vercel menggunakan pagination.
+       * Kita terus mengambil halaman berikutnya sampai selesai.
+       */
+      do {
+        let url = "/v9/projects?limit=100";
+
+        if (next) {
+          url += "&until=" + encodeURIComponent(next);
+        }
+
+        const data = await vercelFetch(url);
+
+        if (Array.isArray(data?.projects)) {
+          allProjects.push(...data.projects);
+        }
+
+        next = data?.pagination?.next || null;
+
+      } while (next);
+
+      projects = allProjects;
+
+      /*
+       * Bersihkan selected yang sudah tidak ada.
+       */
+      selectedProjects.forEach(id => {
+        if (!projects.some(project => project.id === id)) {
+          selectedProjects.delete(id);
+        }
+      });
+
+      renderProjects();
+      updateStats();
+
+      showToast(
+        `${projects.length} project berhasil dimuat.`,
+        "success"
+      );
+
+    } catch (error) {
+
+      container.innerHTML = `
+        <div class="empty">
+          <div>
+            <div class="empty-icon">!</div>
+            <h3>Gagal mengambil project</h3>
+            <p>${escapeHtml(error.message)}</p>
+          </div>
+        </div>
+      `;
+
+      showToast(
+        "Gagal mengambil project: " + error.message,
+        "error"
+      );
+
+    } finally {
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = "↻ Refresh";
+    }
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * RENDER PROJECTS
+   * ------------------------------------------------------------
+   */
+
+  function renderProjects() {
+    const container = $("projectsContainer");
+
+    const query = $("searchInput").value
+      .trim()
+      .toLowerCase();
+
+    const filtered = projects.filter(project => {
+      const name = String(project.name || "").toLowerCase();
+      const id = String(project.id || "").toLowerCase();
+
+      return name.includes(query) || id.includes(query);
+    });
+
+    if (!filtered.length) {
+
+      container.innerHTML = `
+        <div class="empty">
+          <div>
+            <div class="empty-icon">⌕</div>
+            <h3>${projects.length ? "Project tidak ditemukan" : "Tidak ada project"}</h3>
+            <p>
+              ${
+                projects.length
+                  ? "Coba gunakan kata pencarian yang berbeda."
+                  : "Tidak ada project pada akun Vercel ini."
+              }
+            </p>
+          </div>
+        </div>
+      `;
+
+      return;
+    }
+
+    container.innerHTML = filtered.map(project => {
+
+      const id = project.id;
+      const checked = selectedProjects.has(id);
+
+      const name = project.name || "Unnamed Project";
+
+      const framework =
+        project.framework ||
+        project.link?.type ||
+        "Unknown";
+
+      const created =
+        project.createdAt
+          ? formatDate(project.createdAt)
+          : "Unknown";
+
+      return `
+        <article
+          class="project ${checked ? "selected" : ""}"
+          data-id="${escapeAttribute(id)}"
+        >
+
+          <input
+            class="checkbox"
+            type="checkbox"
+            ${checked ? "checked" : ""}
+            onchange="toggleProject('${escapeJs(id)}', this.checked)"
+          >
+
+          <div class="project-icon">
+            ${escapeHtml(getInitials(name))}
+          </div>
+
+          <div class="project-info">
+            <div class="project-name">
+              ${escapeHtml(name)}
+            </div>
+
+            <div class="project-meta">
+              <span>${escapeHtml(framework)}</span>
+              <span>•</span>
+              <span>${escapeHtml(created)}</span>
+              <span class="project-id">
+                ${escapeHtml(id)}
+              </span>
+            </div>
+          </div>
+
+          <div class="project-actions">
+
+            <button
+              class="mini-btn"
+              title="Open project"
+              onclick="openProject('${escapeJs(name)}')"
+            >
+              ↗
+            </button>
+
+            <button
+              class="mini-btn delete"
+              title="Delete project"
+              onclick="confirmDeleteSingle('${escapeJs(id)}')"
+            >
+              🗑
+            </button>
+
+          </div>
+
+        </article>
+      `;
+
+    }).join("");
+
+    updateStats();
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * SELECTION
+   * ------------------------------------------------------------
+   */
+
+  function toggleProject(id, checked) {
+    if (checked) {
+      selectedProjects.add(id);
+    } else {
+      selectedProjects.delete(id);
+    }
+
+    renderProjects();
+    updateStats();
+  }
+
+  function selectAllVisible() {
+
+    const query = $("searchInput")
+      .value
+      .trim()
+      .toLowerCase();
+
+    const visible = projects.filter(project => {
+
+      const name = String(project.name || "").toLowerCase();
+      const id = String(project.id || "").toLowerCase();
+
+      return name.includes(query) || id.includes(query);
+    });
+
+    visible.forEach(project => {
+      selectedProjects.add(project.id);
+    });
+
+    renderProjects();
+    updateStats();
+  }
+
+  function clearSelection() {
+    selectedProjects.clear();
+
+    renderProjects();
+    updateStats();
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * STATS
+   * ------------------------------------------------------------
+   */
+
+  function updateStats() {
+    $("totalCount").textContent = projects.length;
+    $("selectedCount").textContent = selectedProjects.size;
+    $("deletedCount").textContent = deletedCount;
+    $("failedCount").textContent = failedCount;
+
+    $("selectionText").textContent =
+      `${selectedProjects.size} selected`;
+
+    $("deleteSelectedBtn").disabled =
+      selectedProjects.size === 0;
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * DELETE SINGLE
+   * ------------------------------------------------------------
+   */
+
+  function confirmDeleteSingle(id) {
+
+    const project = projects.find(p => p.id === id);
+
+    if (!project) {
+      showToast("Project tidak ditemukan.", "error");
+      return;
+    }
+
+    currentConfirmAction = async () => {
+      await deleteProjects([id]);
+    };
+
+    showModal(
+      "Delete project?",
+      `Project "${project.name}" akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.`
+    );
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * DELETE SELECTED
+   * ------------------------------------------------------------
+   */
+
+  function deleteSelected() {
+
+    const ids = [...selectedProjects];
+
+    if (!ids.length) {
+      showToast("Belum ada project yang dipilih.", "error");
+      return;
+    }
+
+    currentConfirmAction = async () => {
+      await deleteProjects(ids);
+    };
+
+    showModal(
+      "Delete selected projects?",
+      `Kamu akan menghapus ${ids.length} project yang dipilih secara permanen. Tindakan ini tidak dapat dibatalkan.`
+    );
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * DELETE ALL
+   *
+   * Tombol Delete All sengaja tidak ditaruh langsung di toolbar
+   * agar tidak mudah terpencet.
+   *
+   * Gunakan:
+   * window.confirmDeleteAll()
+   *
+   * atau aktifkan tombol tambahan sendiri.
+   * ------------------------------------------------------------
+   */
+
+  function confirmDeleteAll() {
+
+    if (!projects.length) {
+      showToast("Tidak ada project untuk dihapus.", "error");
+      return;
+    }
+
+    currentConfirmAction = async () => {
+      const ids = projects.map(project => project.id);
+      await deleteProjects(ids);
+    };
+
+    showModal(
+      "DELETE ALL PROJECTS?",
+      `PERINGATAN: seluruh ${projects.length} project pada akun ini akan dihapus secara permanen. Pastikan kamu benar-benar yakin.`
+    );
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * DELETE PROJECTS
+   * ------------------------------------------------------------
+   */
+
+  async function deleteProjects(ids) {
+
+    if (!ids.length) {
+      return;
+    }
+
+    closeModal();
+
+    const uniqueIds = [...new Set(ids)];
+
+    showProgress(true);
+
+    let completed = 0;
+
+    deletedCount = 0;
+    failedCount = 0;
+
+    updateStats();
+
+    /*
+     * Sequential deletion:
+     * lebih lambat sedikit, tetapi lebih aman terhadap rate limit
+     * dibanding menembakkan ratusan request sekaligus.
+     */
+
+    for (const id of uniqueIds) {
+
+      const project =
+        projects.find(p => p.id === id);
+
+      const projectName =
+        project?.name || id;
+
+      setProgress(
+        completed,
+        uniqueIds.length,
+        `Deleting ${projectName}`
+      );
+
+      try {
+
+        await vercelFetch(
+          "/v9/projects/" + encodeURIComponent(id),
+          {
+            method: "DELETE"
+          }
+        );
+
+        deletedCount++;
+
+        /*
+         * Hapus dari array lokal.
+         */
+        projects = projects.filter(
+          project => project.id !== id
+        );
+
+        selectedProjects.delete(id);
+
+      } catch (error) {
+
+        failedCount++;
+
+        console.error(
+          `Failed deleting ${projectName}:`,
+          error
+        );
+      }
+
+      completed++;
+
+      setProgress(
+        completed,
+        uniqueIds.length,
+        completed === uniqueIds.length
+          ? "Finished"
+          : `Deleting ${projectName}`
+      );
+
+      updateStats();
+      renderProjects();
+
+      /*
+       * Sedikit delay agar tidak terlalu agresif
+       * terhadap API.
+       */
+      if (completed < uniqueIds.length) {
+        await sleep(120);
+      }
+    }
+
+    setProgress(
+      uniqueIds.length,
+      uniqueIds.length,
+      "Finished"
+    );
+
+    updateStats();
+
+    if (failedCount === 0) {
+      showToast(
+        `${deletedCount} project berhasil dihapus.`,
+        "success"
+      );
+    } else {
+      showToast(
+        `${deletedCount} berhasil, ${failedCount} gagal.`,
+        "error"
+      );
+    }
+
+    setTimeout(() => {
+      showProgress(false);
+    }, 1300);
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * PROGRESS
+   * ------------------------------------------------------------
+   */
+
+  function showProgress(show) {
+    $("progressCard").classList.toggle("show", show);
+  }
+
+  function setProgress(current, total, status) {
+
+    const percentage =
+      total > 0
+        ? Math.min(100, (current / total) * 100)
+        : 0;
+
+    $("progressFill").style.width =
+      percentage + "%";
+
+    $("progressStatus").textContent =
+      `${current} / ${total}`;
+
+    $("progressTitle").textContent =
+      status;
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * MODAL
+   * ------------------------------------------------------------
+   */
+
+  function showModal(title, text) {
+
+    $("modalTitle").textContent = title;
+    $("modalText").textContent = text;
+
+    $("modalBg").classList.add("show");
+
+    $("modalConfirmBtn").onclick =
+      async () => {
+
+        if (!currentConfirmAction) {
+          closeModal();
+          return;
+        }
+
+        const action = currentConfirmAction;
+
+        currentConfirmAction = null;
+
+        await action();
+      };
+  }
+
+  function closeModal() {
+    $("modalBg").classList.remove("show");
+    currentConfirmAction = null;
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * OPEN PROJECT
+   * ------------------------------------------------------------
+   */
+
+  function openProject(name) {
+
+    const encoded =
+      encodeURIComponent(name);
+
+    window.open(
+      "https://vercel.com/dashboard",
+      "_blank",
+      "noopener,noreferrer"
+    );
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * TOAST
+   * ------------------------------------------------------------
+   */
+
+  function showToast(message, type = "success") {
+
+    const container = $("toastContainer");
+
+    const toast =
+      document.createElement("div");
+
+    toast.className =
+      `toast ${type}`;
+
+    toast.textContent = message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transform = "translateY(-5px)";
+
+      setTimeout(() => {
+        toast.remove();
+      }, 200);
+    }, 3500);
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * HELPERS
+   * ------------------------------------------------------------
+   */
+
+  function sleep(ms) {
+    return new Promise(resolve =>
+      setTimeout(resolve, ms)
+    );
+  }
+
+  function getInitials(name) {
+
+    const parts =
+      String(name)
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean);
+
+    if (!parts.length) {
+      return "V";
+    }
+
+    if (parts.length === 1) {
+      return parts[0]
+        .substring(0, 2)
+        .toUpperCase();
+    }
+
+    return (
+      parts[0][0] +
+      parts[parts.length - 1][0]
+    ).toUpperCase();
+  }
+
+  function formatDate(timestamp) {
+
+    const date =
+      new Date(
+        typeof timestamp === "number"
+          ? timestamp
+          : Number(timestamp)
+      );
+
+    if (Number.isNaN(date.getTime())) {
+      return "Unknown";
+    }
+
+    return date.toLocaleDateString(
+      "id-ID",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      }
+    );
+  }
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function escapeAttribute(value) {
+    return escapeHtml(value);
+  }
+
+  function escapeJs(value) {
+
+    return String(value)
+      .replaceAll("\\", "\\\\")
+      .replaceAll("'", "\\'")
+      .replaceAll("\n", "\\n")
+      .replaceAll("\r", "\\r");
+  }
+
+  /*
+   * ------------------------------------------------------------
+   * KEYBOARD SHORTCUTS
+   * ------------------------------------------------------------
+   */
+
+  $("tokenInput").addEventListener(
+    "keydown",
+    event => {
+
+      if (event.key === "Enter") {
+        connectVercel();
+      }
+    }
+  );
+
+  document.addEventListener(
+    "keydown",
+    event => {
+
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    }
+  );
+
+  /*
+   * Klik backdrop = tutup modal
+   */
+
+  $("modalBg").addEventListener(
+    "click",
+    event => {
+
+      if (event.target === $("modalBg")) {
+        closeModal();
+      }
+    }
+  );
+
+  /*
+   * ------------------------------------------------------------
+   * GLOBAL
+   * ------------------------------------------------------------
+   *
+   * Ini sengaja disediakan supaya Delete All bisa dipanggil
+   * tanpa menambahkan tombol berbahaya langsung di toolbar.
+   *
+   * Jika mau tombol Delete All:
+   *
+   * <button onclick="confirmDeleteAll()">
+   *   Delete All
+   * </button>
+   *
+   */
+
+  window.confirmDeleteAll = confirmDeleteAll;
+
+  /*
+   * Initial UI
+   */
+
+  updateStats();
+</script>
+
+</body>
+</html>
